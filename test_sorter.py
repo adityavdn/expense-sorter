@@ -8,7 +8,8 @@ d = tempfile.mkdtemp()
 brain = Brain(os.path.join(d, "brain.json"))
 
 # starter knowledge generalises to new merchant names
-assert brain.guess("CARD PAYMENT TO TESCO STORES 3321")[0] == "Groceries"
+cat, conf = brain.guess("CARD PAYMENT TO TESCO STORES 3321")
+assert cat == "Groceries" and conf > 0.9, conf        # known merchants don't trigger questions
 assert brain.guess("SAINSBURYS LOCAL")[0] == "Groceries"
 assert brain.guess("XYZ UNKNOWN") == (None, 0.0)          # unknown -> will ask
 

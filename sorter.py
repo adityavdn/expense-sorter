@@ -14,6 +14,7 @@ import sys
 
 BRAIN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "brain.json")
 ASK_BELOW = 0.6          # ask you when it's less sure than this
+SMOOTH = 0.01            # small = trusts words it has seen; 1.0 made every guess look unsure
 NOISE = set("""card payment to from on at purchase pos debit contactless ltd limited uk gb
 www com co the and direct dd so fp bgc tfr ref visa gbp plc online mandate no""".split())
 
@@ -78,7 +79,7 @@ class Brain:
             counts = self.words.get(cat, {})
             size = sum(counts.values())
             scores[cat] = sum(
-                math.log((counts.get(t, 0) + 1) / (size + vocab)) for t in toks)
+                math.log((counts.get(t, 0) + SMOOTH) / (size + SMOOTH * vocab)) for t in toks)
         best = max(scores, key=scores.get)
         confidence = 1 / sum(math.exp(s - scores[best]) for s in scores.values())
         return best, confidence
@@ -120,15 +121,13 @@ def read_statement(path):
 def ask(desc, spent, guess, cats):
     print(f"\n  {desc}   £{spent:.2f}")
     print("  " + "   ".join(f"{i}.{c}" for i, c in enumerate(cats, 1)))
-    while True:
-        hint = f"Enter = {guess}" if guess else "type a number or new category"
-        ans = input(f"  Category? [{hint}]: ").strip()
-        if not ans and guess:
-            return guess
-        if ans.isdigit() and 1 <= int(ans) <= len(cats):
-            return cats[int(ans) - 1]
-        if ans and not ans.isdigit():
-            return ans
+    hint = f"Enter = {guess}" if guess else "type a name like Fitness, or Enter to skip"
+    ans = input(f"  Category? [{hint}]: ").strip()
+    if not ans:
+        return guess                                  # None = skipped
+    if ans.isdigit():
+        return cats[int(ans) - 1] if 1 <= int(ans) <= len(cats) else guess
+    return ans
 
 
 def sort_statement(path, brain, interactive=True):
@@ -141,8 +140,9 @@ def sort_statement(path, brain, interactive=True):
         cat, conf = brain.guess(row[desc_col])
         if interactive and conf < ASK_BELOW:
             cat = ask(row[desc_col], -amt, cat, brain.categories())
-            brain.learn(row[desc_col], cat)       # learns instantly, so repeats aren't asked again
-            brain.save()
+            if cat:
+                brain.learn(row[desc_col], cat)   # learns instantly, so repeats aren't asked again
+                brain.save()
             asked += 1
         row["Category"] = cat or "Uncategorised"
 
