@@ -17,6 +17,10 @@ ASK_BELOW = 0.6          # ask you when it's less sure than this
 SMOOTH = 0.01            # small = trusts words it has seen; 1.0 made every guess look unsure
 NOISE = set("""card payment to from on at purchase pos debit contactless ltd limited uk gb
 www com co the and direct dd so fp bgc tfr ref visa gbp plc online mandate no""".split())
+# ponytail: town names on statements otherwise teach "cardiff = Books"; extend if yours is missing
+NOISE |= set("""london cardiff swansea newport bristol bath birmingham manchester liverpool leeds
+sheffield nottingham leicester coventry oxford cambridge reading brighton southampton portsmouth
+glasgow edinburgh belfast york newcastle exeter plymouth norwich roehampton""".split())
 
 SEED = {  # starter knowledge; your corrections quickly outweigh it
     "Groceries": "tesco sainsburys asda aldi lidl morrisons waitrose coop iceland ocado",

@@ -20,6 +20,10 @@ assert brain.guess("PUREGYM LTD") == ("Fitness", 1.0)
 brain.learn("THE GYM GROUP", "Fitness")
 assert brain.guess("GYM BOX SOHO")[0] == "Fitness"
 
+# a town name in one label must not drag other merchants along
+brain.learn("WATERSTONES CARDIFF", "Books")
+assert brain.guess("NANDOS CARDIFF")[0] == "Eating out"
+
 # learning survives a restart
 brain.save()
 assert Brain(brain.path).guess("PUREGYM LTD") == ("Fitness", 1.0)
