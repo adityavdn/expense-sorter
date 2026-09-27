@@ -1,0 +1,4 @@
+__pycache__/
+brain.json
+*_sorted.csv
+.DS_Store
