@@ -1,35 +1,45 @@
 # Expense Sorter
 
-Categorises your bank statement and **learns from every correction you make**. It's pure
-Python and runs offline, so your data never leaves your laptop.
+A practical expense categorisation tool that learns from your corrections and sorts bank transactions automatically.
+
+## Overview
+
+Expense Sorter reads bank statement data, identifies likely merchant categories and asks only when confidence is low. As you correct the predictions, the tool learns from those corrections and improves future classification.
+
+## How it works
+
+- recognises common UK merchants and categories
+- applies a rule-based and probabilistic approach to classify transactions
+- remembers prior corrections to reduce repeated prompts
+- supports CSV exports from major banks and fintech providers
+
+## Tech Stack
+
+- Python
+- CSV processing
+- Naive Bayes-style classification
+
+## How to run
 
 ```bash
 python3 sorter.py statement.csv
 ```
 
-```
-  PUREGYM LTD   £24.99
-  1.Bills   2.Cash   3.Eating out   4.Groceries   5.Shopping ...
-  Category? [type a number or new category]: Fitness
+Optional commands:
 
-Spending by category  (20 transactions, asked you about 2)
-  Bills           £   723.00  ██████████████████████
-  Fitness         £    49.98  ██
-  Groceries       £    52.15  ██
-  ...
+```bash
+python3 sorter.py statement.csv --no-ask
+python3 sorter.py learn statement_sorted.csv
 ```
 
-**How it learns**
-- It knows common UK merchants (Tesco, TfL, Netflix and so on) from the start.
-- It only asks about transactions it isn't sure of. Your answer is remembered, so that
-  merchant is never asked about again.
-- Words generalise: once you've labelled `PUREGYM` as Fitness, it will guess `THE GYM GROUP` as Fitness too.
-  Under the hood this is naive Bayes plus an exact-merchant memory, stored in `brain.json`.
+## Project structure
 
-**Other commands**
-- `python3 sorter.py statement.csv --no-ask` sorts without asking any questions.
-- `python3 sorter.py learn statement_sorted.csv` learns from a sorted file you fixed by hand in Excel or Numbers.
+```text
+.
+├── sorter.py
+├── test_sorter.py
+├── sample_statement.csv
+├── README.md
+└── supporting data files
+```
 
-It works with CSV exports from Monzo, Barclays, Lloyds, Revolut and others: it spots the
-description column and either a single amount column or separate paid-in/paid-out columns.
-Try it with `sample_statement.csv`. Run the tests with `python3 test_sorter.py`.
