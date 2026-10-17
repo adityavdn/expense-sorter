@@ -1,5 +1,7 @@
 # Expense Sorter
 
+![tests](https://github.com/adityavdn/expense-sorter/actions/workflows/tests.yml/badge.svg)
+
 A practical expense categorisation tool that learns from your corrections and sorts bank transactions automatically.
 
 ## Overview
